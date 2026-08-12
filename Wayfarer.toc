@@ -1,0 +1,39 @@
+## Interface: 11509
+## Title: Wayfarer
+## Notes: An all in one map addon for Classic Era.|nCoordinates, zone levels, fog of war, screen-sized map and dungeon maps with boss locations.
+## Author: looterz
+## Version: 1.0.1
+## Category: Map
+## X-Category: Map
+## OptionalDeps: Questie, AtlasLootClassic, Leatrix_Maps
+## X-License: See LICENSE
+## IconTexture: Interface\AddOns\Wayfarer\Media\icon
+
+## DefaultState: Enabled
+## SavedVariables: WayfarerDB
+
+# Libraries
+Libs\Libs.xml
+
+# Localization
+Locale\Locale.xml
+
+# Core
+Core\Data.lua
+Core\DataTBC.lua
+Core\DungeonData.lua
+Core\DerivedBossData.lua
+Core\Core.lua
+Core\Profiles.lua
+Core\Options.lua
+Core\Diagnostics.lua
+
+# Feature modules
+Modules\MapCanvas.lua
+Modules\MapSize.lua
+Modules\Fading.lua
+Modules\Coordinates.lua
+Modules\ZoneLevels.lua
+Modules\MapReveal.lua
+Modules\InstanceMaps.lua
+Modules\Integrations.lua
