@@ -5,6 +5,7 @@
 ## Version: 1.0.1
 ## Category: Map
 ## X-Category: Map
+## X-Curse-Project-ID: 1648926
 ## OptionalDeps: Questie, AtlasLootClassic, Leatrix_Maps
 ## X-License: See LICENSE
 ## IconTexture: Interface\AddOns\Wayfarer\Media\icon
