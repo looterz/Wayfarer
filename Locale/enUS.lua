@@ -162,4 +162,4 @@ L["%s must be a number."] = true
 L["Give the profile a name."] = true
 L["Names containing \" - \" are reserved for character profiles."] = true
 L["A profile named %s already exists."] = true
-L["Draws an icon at each dungeon entrance. Off by default: the markers sit awkwardly on the zone art. The entrances still tooltip and still open their map either way."] = true
+L["Draws each dungeon's own icon at its entrance. The entrances still tooltip and still open their map with the icons hidden."] = true

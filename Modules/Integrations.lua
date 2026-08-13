@@ -497,12 +497,18 @@ end
 -- so waiting for one to appear -- which is what we were doing, and what
 -- only works alongside Leatrix_Maps -- means the feature never fires. We
 -- have the coordinates ourselves, so draw them.
-local ENTRANCE_PIN_SIZE = 22
+-- One size drives the icon, the hover area and the click target, so
+-- the artwork is exactly as big as the pin feels. Developer mode can
+-- override it live to try sizes; the export carries the choice back
+-- here to become the shipped default.
+local ENTRANCE_PIN_SIZE = 48
 
--- The marker art is off by default, so the pin is usually an invisible
--- target sitting on the entrance already drawn into the zone art. A 22px
--- square is a pixel hunt; extend the hover and click area well past it.
-local ENTRANCE_PIN_HIT_MARGIN = 14
+local GetEntrancePinSize = function()
+	local dev = Wayfarer.db and Wayfarer.db.global and Wayfarer.db.global.devData
+	return (dev and dev.pinSize) or ENTRANCE_PIN_SIZE
+end
+
+ns.GetEntrancePinSize = GetEntrancePinSize
 
 function Integrations:GetEntrancePin(index)
 	self.entrancePins = self.entrancePins or {}
@@ -524,9 +530,7 @@ function Integrations:GetEntrancePin(index)
 		-- parents, so the pin tracks panning as before -- it just no
 		-- longer scales with zoom, which for a marker is an improvement.
 		pin = CreateFrame("Button", nil, Canvas)
-		pin:SetSize(ENTRANCE_PIN_SIZE, ENTRANCE_PIN_SIZE)
-		pin:SetHitRectInsets(-ENTRANCE_PIN_HIT_MARGIN, -ENTRANCE_PIN_HIT_MARGIN,
-			-ENTRANCE_PIN_HIT_MARGIN, -ENTRANCE_PIN_HIT_MARGIN)
+		pin:SetSize(GetEntrancePinSize(), GetEntrancePinSize())
 		pin:SetFrameStrata(Canvas:GetFrameStrata())
 		pin:SetFrameLevel(Canvas.ScrollContainer:GetFrameLevel() + 30)
 
@@ -646,26 +650,51 @@ function Integrations:ShowEntrancePins()
 		return
 	end
 
+	local pinSize = GetEntrancePinSize()
+
 	for index, portal in ipairs(portals) do
 		local pin = self:GetEntrancePin(index)
 
 		if (pin) then
+			pin:SetSize(pinSize, pinSize)
 			pin.dungeon = portal.name
 			pin.instanceMapID = instanceIDByDungeon[portal.name]
 			pin.label = ns.PrettyDungeonName(portal.name)
 
-			-- The marker artwork is off by default: it reads as clutter on
-			-- hand-drawn zone art. The frame stays live either way, so the
-			-- entrance still tooltips and still clicks through -- you just
-			-- hover the entrance already drawn on the map.
+			-- Each instance gets its own LFG artwork where the client
+			-- ships it; those are self-contained, so the box behind the
+			-- generic fallback icon stays hidden for them. With the art
+			-- off the frame stays live: the entrance still tooltips and
+			-- still clicks through.
+			local custom = ns.GetDungeonIcon and ns.GetDungeonIcon(portal.name)
+			if (custom) then
+				pin.Icon:SetTexture(custom)
+				-- LFG artwork is framed already; square inventory icons
+				-- keep the usual edge trim.
+				if (custom:find("LFGFrame")) then
+					pin.Icon:SetTexCoord(0, 1, 0, 1)
+				else
+					pin.Icon:SetTexCoord(.1, .9, .1, .9)
+				end
+			else
+				pin.Icon:SetTexture("Interface\\Icons\\INV_Misc_Map_01")
+				pin.Icon:SetTexCoord(.1, .9, .1, .9)
+			end
+
 			local showArt = db.entrancePinIcons
 			pin.Icon:SetShown(showArt)
-			pin.Fill:SetShown(showArt)
-			pin.Backing:SetShown(showArt)
+			pin.Fill:SetShown(showArt and not custom)
+			pin.Backing:SetShown(showArt and not custom)
 
 			pin:ClearAllPoints()
+			-- The offsets are interpreted in the pin's own coordinate
+			-- space, but the scroll child rescales as the map zooms, so
+			-- the child-relative fractions must be converted through the
+			-- scale difference or the pins drift off their entrances the
+			-- moment the zoom changes.
+			local relScale = child:GetEffectiveScale() / (pin:GetEffectiveScale() or 1)
 			pin:SetPoint("CENTER", child, "TOPLEFT",
-				(portal.x / 100) * width, -(portal.y / 100) * height)
+				(portal.x / 100) * width * relScale, -(portal.y / 100) * height * relScale)
 			pin:Show()
 
 			-- No longer clipped by the scroll frame, so hide it by hand
@@ -712,6 +741,15 @@ function Integrations:OnMapReady()
 	end
 
 	self:SecureHookScript(Canvas, "OnShow", "ShowEntrancePins")
+
+	-- Zooming rescales the scroll child and panning slides it; both move
+	-- where our anchors land and stale-cull pins, so re-place on each.
+	if (Canvas) and (Canvas.OnCanvasScaleChanged) then
+		self:SecureHook(Canvas, "OnCanvasScaleChanged", "ShowEntrancePins")
+	end
+	if (Canvas) and (Canvas.OnCanvasPanChanged) then
+		self:SecureHook(Canvas, "OnCanvasPanChanged", "ShowEntrancePins")
+	end
 
 	-- Hand AtlasLoot back its own window when the map goes away.
 	self:SecureHookScript(Canvas, "OnHide", "UndockAtlasLoot")
@@ -788,7 +826,7 @@ function Integrations:GetOptions()
 				order = 35,
 				type = "toggle", width = "full",
 				name = L["Show entrance markers"],
-				desc = L["Draws an icon at each dungeon entrance. Off by default: the markers sit awkwardly on the zone art. The entrances still tooltip and still open their map either way."],
+				desc = L["Draws each dungeon's own icon at its entrance. The entrances still tooltip and still open their map with the icons hidden."],
 				disabled = function() return not Wayfarer.db.profile.integrations.entrancePins end,
 				get = ns.Getter("integrations", "entrancePinIcons"),
 				set = ns.Setter("integrations", "entrancePinIcons")

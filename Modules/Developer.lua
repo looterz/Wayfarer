@@ -299,10 +299,10 @@ local HookEntrancePins = function()
 			pin:SetScript("OnDragStop", OnPortalDragStop)
 		end
 
-		-- The marker art is normally hidden; an invisible pin cannot be
-		-- dragged with any confidence, so force it visible in dev mode.
-		if (on) and (pin:IsShown()) then
-			pin.Icon:Show()
+		-- An invisible pin cannot be dragged with any confidence. When
+		-- the player has icons enabled they are already visible; with
+		-- icons off, show just the plain marker box, never the icon.
+		if (on) and (pin:IsShown()) and (not Wayfarer.db.profile.integrations.entrancePinIcons) then
 			pin.Fill:Show()
 			pin.Backing:Show()
 		end
@@ -447,6 +447,12 @@ function Developer:BuildExport()
 	local data = Store()
 	local lines = { "-- Wayfarer developer export, paste-ready data blocks" }
 
+	if (data.pinSize) then
+		lines[#lines + 1] = ""
+		lines[#lines + 1] = "-- entrance pin size, bake as ENTRANCE_PIN_SIZE in Integrations.lua"
+		lines[#lines + 1] = string_format("ENTRANCE_PIN_SIZE = %d", data.pinSize)
+	end
+
 	for zone, list in pairs(data.portals) do
 		lines[#lines + 1] = ""
 		lines[#lines + 1] = string_format("-- ns.dungeonPortals[%d]", zone)
@@ -564,6 +570,29 @@ function Developer:CreateSidebar()
 	hint:SetJustifyH("LEFT")
 	hint:SetText("Drag pins on the map to reposition them.")
 
+	local sizeLabel = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+	sizeLabel:SetPoint("TOPLEFT", hint, "BOTTOMLEFT", 0, -8)
+	bar.SizeLabel = sizeLabel
+
+	local StepPinSize = function(delta)
+		local store = Store()
+		local size = (store.pinSize or (ns.GetEntrancePinSize and ns.GetEntrancePinSize()) or 36) + delta
+		store.pinSize = math.max(16, math.min(64, size))
+		self:RedrawPortals()
+	end
+
+	local smaller = CreateFrame("Button", nil, bar, "UIPanelButtonTemplate")
+	smaller:SetSize(24, 18)
+	smaller:SetPoint("LEFT", sizeLabel, "RIGHT", 8, 0)
+	smaller:SetText("-")
+	smaller:SetScript("OnClick", function() StepPinSize(-2) end)
+
+	local bigger = CreateFrame("Button", nil, bar, "UIPanelButtonTemplate")
+	bigger:SetSize(24, 18)
+	bigger:SetPoint("LEFT", smaller, "RIGHT", 4, 0)
+	bigger:SetText("+")
+	bigger:SetScript("OnClick", function() StepPinSize(2) end)
+
 	-- Bottom buttons.
 	local add = CreateFrame("Button", nil, bar, "UIPanelButtonTemplate")
 	add:SetSize(SIDEBAR_WIDTH - 20, 20)
@@ -658,6 +687,11 @@ function Developer:RefreshSidebar()
 	if (not kind) then
 		bar:Hide()
 		return
+	end
+
+	if (bar.SizeLabel) then
+		bar.SizeLabel:SetFormattedText("Entrance icon size: %d",
+			(ns.GetEntrancePinSize and ns.GetEntrancePinSize()) or 36)
 	end
 
 	local shown = 0

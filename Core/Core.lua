@@ -26,11 +26,20 @@ if (not ns.isSupportedClient) then
 end
 
 if (ns.isClassicEra) then
-	-- This client has neither the TBC instances nor their map art;
-	-- keep them out of the picker and the auto-detection entirely.
+	-- This client has neither the TBC instances nor their map art; keep
+	-- them out of the picker, the auto-detection, and the entrance pins.
+	local tbcFolders = {}
 	for instanceMapID in pairs(ns.tbcInstances or {}) do
+		tbcFolders[ns.dungeonByMapID[instanceMapID] or 0] = true
 		ns.dungeonByMapID[instanceMapID] = nil
 		ns.dungeonBosses[instanceMapID] = nil
+	end
+	for _, portals in pairs(ns.dungeonPortals) do
+		for i = #portals, 1, -1 do
+			if (tbcFolders[portals[i].name]) then
+				table.remove(portals, i)
+			end
+		end
 	end
 else
 	-- The TBC client re-numbers zone map art, so its reveal table
@@ -81,7 +90,7 @@ ns.defaults = {
 		},
 		fading = {
 			enable = true,
-			alphaStationary = .9,
+			alphaStationary = 1,
 			alphaMoving = .7
 		},
 		zoneLevels = {
@@ -120,9 +129,9 @@ ns.defaults = {
 			atlasLoot = true,
 			dockAtlasLoot = true,
 			entrancePins = true,
-			-- The markers look out of place on the zone art; the hit
-			-- area and tooltip do the job without them.
-			entrancePinIcons = false
+			-- On by default now that each instance draws its own icon
+			-- rather than a generic map marker.
+			entrancePinIcons = true
 		}
 	}
 }

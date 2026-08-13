@@ -72,23 +72,21 @@ end
 
 -- Open our panel in whichever settings UI this client has.
 ns.OpenOptions = function()
-	local category = ns.optionsCategory
+	local frame = ns.optionsCategory
 
-	if (Settings and Settings.OpenToCategory) then
-		local id = category and (category.GetID and category:GetID() or category.ID)
-		if (id) then
-			Settings.OpenToCategory(id)
-			return
-		end
-		Settings.OpenToCategory(L["Wayfarer"])
+	if (frame) and (Settings) and (Settings.OpenToCategory) then
+		-- AceConfigDialog stores the Settings category id in the returned
+		-- frame's name. Passing anything else, the panel's display name
+		-- included, lands on the front page of the game settings.
+		Settings.OpenToCategory(frame.name)
 		return
 	end
 
-	if (InterfaceOptionsFrame_OpenToCategory) and (category) then
+	if (InterfaceOptionsFrame_OpenToCategory) and (frame) then
 		-- Older clients need this twice; the first call only expands
 		-- the addon list, the second actually selects the panel.
-		InterfaceOptionsFrame_OpenToCategory(category)
-		InterfaceOptionsFrame_OpenToCategory(category)
+		InterfaceOptionsFrame_OpenToCategory(frame)
+		InterfaceOptionsFrame_OpenToCategory(frame)
 		return
 	end
 

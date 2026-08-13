@@ -996,8 +996,13 @@ function InstanceMaps:GetListRow(index)
 		highlight:SetAllPoints()
 		highlight:SetColorTexture(1, 1, 1, .12)
 
+		local icon = row:CreateTexture(nil, "ARTWORK")
+		icon:SetSize(14, 14)
+		icon:SetPoint("LEFT", 4, 0)
+		row.Icon = icon
+
 		local label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-		label:SetPoint("LEFT", 6, 0)
+		label:SetPoint("LEFT", icon, "RIGHT", 4, 0)
 		label:SetPoint("RIGHT", -6, 0)
 		label:SetJustifyH("LEFT")
 		row.Label = label
@@ -1015,6 +1020,7 @@ function InstanceMaps:RefreshList()
 	local index = 1
 
 	local zoneRow = self:GetListRow(index)
+	zoneRow.Icon:Hide()
 	zoneRow.Label:SetText(Colors.title.colorCode..L["Zone Map"].."|r")
 	zoneRow:SetScript("OnClick", function() self:SetSelection(nil) end)
 	zoneRow:Show()
@@ -1022,6 +1028,9 @@ function InstanceMaps:RefreshList()
 	for _, entry in ipairs(dungeonList) do
 		index = index + 1
 		local row = self:GetListRow(index)
+		local icon = ns.GetDungeonIcon and ns.GetDungeonIcon(entry.dungeon)
+		row.Icon:SetTexture(icon or "Interface\\Icons\\INV_Misc_Map_01")
+		row.Icon:Show()
 		row.Label:SetText(entry.label)
 		row:SetScript("OnClick", function() self:SetSelection(entry) end)
 		row:Show()

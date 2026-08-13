@@ -86,6 +86,86 @@ ns.dungeonByMapID = {
 	[585] = "MagistersTerrace",
 }
 
+-- The client's own LFG artwork gives most instances a dedicated icon.
+-- Wings of one complex share their complex's icon; anything without an
+-- entry falls back to the generic map icon at the call site.
+local LFG_ICON = "Interface\\LFGFrame\\LFGIcon-"
+
+ns.dungeonIcons = {
+	Ragefire = LFG_ICON.."RagefireChasm",
+	WailingCaverns = LFG_ICON.."WailingCaverns",
+	TheDeadmines = LFG_ICON.."Deadmines",
+	ShadowfangKeep = LFG_ICON.."ShadowfangKeep",
+	BlackfathomDeeps = LFG_ICON.."BlackfathomDeeps",
+	TheStockade = LFG_ICON.."StormwindStockades",
+	Gnomeregan = LFG_ICON.."Gnomeregan",
+	RazorfenKraul = LFG_ICON.."RazorfenKraul",
+	ScarletMonastery = LFG_ICON.."ScarletMonastery",
+	RazorfenDowns = LFG_ICON.."RazorfenDowns",
+	Uldaman = LFG_ICON.."Uldaman",
+	ZulFarrak = LFG_ICON.."ZulFarak",
+	Maraudon = LFG_ICON.."Maraudon",
+	TheTempleofAtalhakkar = LFG_ICON.."SunkenTemple",
+	BlackrockDepths = LFG_ICON.."BlackrockDepths",
+	BlackrockSpire = LFG_ICON.."BlackrockSpire",
+	Diremaul = LFG_ICON.."DireMaul",
+	Stratholme = LFG_ICON.."Stratholme",
+	Scholomance = LFG_ICON.."Scholomance",
+	MoltenCore = LFG_ICON.."MoltenCore",
+	BlackwingLair = LFG_ICON.."BlackwingLair",
+	ZulGurub = LFG_ICON.."ZulGurub",
+	RuinsofAhnQiraj = LFG_ICON.."AQRuins",
+	AhnQiraj = LFG_ICON.."AQTemple",
+	Naxxramas = LFG_ICON.."Naxxramas",
+	-- No LFG artwork exists for Onyxia; her head is the classic stand-in.
+	OnyxiasLair = "Interface\\Icons\\INV_Misc_Head_Dragon_01",
+	Karazhan = LFG_ICON.."Karazhan",
+	GruulsLair = LFG_ICON.."GruulsLair",
+	MagtheridonsLair = LFG_ICON.."HellfireCitadelRaid",
+	CoilfangReservoir = LFG_ICON.."SerpentshrineCavern",
+	TempestKeep = LFG_ICON.."TempestKeep",
+	CoTMountHyjal = LFG_ICON.."HyjalPast",
+	BlackTemple = LFG_ICON.."BlackTemple",
+	SunwellPlateau = LFG_ICON.."Sunwell",
+	ZulAman = LFG_ICON.."ZulAman",
+	HellfireRamparts = LFG_ICON.."HellfireCitadel5Man",
+	TheBloodFurnace = LFG_ICON.."HellfireCitadel5Man",
+	TheShatteredHalls = LFG_ICON.."HellfireCitadel5Man",
+	TheSlavePens = LFG_ICON.."Coilfang",
+	TheUnderbog = LFG_ICON.."Coilfang",
+	TheSteamvault = LFG_ICON.."Coilfang",
+	ManaTombs = LFG_ICON.."Auchindoun",
+	AuchenaiCrypts = LFG_ICON.."Auchindoun",
+	SethekkHalls = LFG_ICON.."Auchindoun",
+	ShadowLabyrinth = LFG_ICON.."Auchindoun",
+	TheMechanar = LFG_ICON.."TempestKeep",
+	TheBotanica = LFG_ICON.."TempestKeep",
+	TheArcatraz = LFG_ICON.."TempestKeep",
+	CoTHillsbradFoothills = LFG_ICON.."CavernsOfTime",
+	CoTTheBlackMorass = LFG_ICON.."CavernsOfTime",
+	MagistersTerrace = LFG_ICON.."MagistersTerrace",
+}
+
+-- Returns a texture path only when the running client actually ships
+-- the file, so a missing icon degrades to the caller's fallback.
+local iconChecked = {}
+
+ns.GetDungeonIcon = function(folder)
+	local icon = folder and ns.dungeonIcons[folder]
+	if (not icon) then
+		return nil
+	end
+	if (type(GetFileIDFromPath) == "function") then
+		if (iconChecked[icon] == nil) then
+			iconChecked[icon] = GetFileIDFromPath(icon) ~= nil
+		end
+		if (not iconChecked[icon]) then
+			return nil
+		end
+	end
+	return icon
+end
+
 -- Folder names double as display names by splitting CamelCase, which
 -- mangles the ones with lowercase words, apostrophes or acronyms.
 ns.dungeonDisplayNames = {
@@ -400,20 +480,24 @@ ns.questieAreaByInstance = {
 ns.dungeonPortals = {
 	-- Eastern Kingdoms
 	[1418] = {{ x=44.6, y=12.1, name="Uldaman", floor=1 }},
-	[1420] = {{ x=82.6, y=33.8, name="ScarletMonastery", floor=1 }},
-	[1421] = {{ x=44.8, y=67.8, name="ShadowfangKeep", floor=1 }},
+	[1420] = {
+		{ x=85, y=32.7, name="ScarletMonastery", floor=1 },
+	},
+	[1421] = {
+		{ x=43.1, y=67.5, name="ShadowfangKeep", floor=1 },
+	},
 	[1422] = {{ x=69.7, y=73.2, name="Scholomance", floor=1 }},
-	[1423] = {  -- Eastern Plaguelands: Stratholme + Naxxramas
-		{ x=31.3, y=15.7, name="Stratholme", floor=1 },
-		{ x=47.9, y=23.9, name="Stratholme", floor=2 },
-		{ x=39.3, y=25.6, name="Naxxramas", floor=1 },
+	[1423] = {
+		{ x=31.1, y=15.6, name="Stratholme", floor=1 },
+		{ x=48.1, y=23.7, name="Stratholme", floor=2 },
+		{ x=38.8, y=25.9, name="Naxxramas", floor=1 },
 	},
 	[1426] = {{ x=24.3, y=39.8, name="Gnomeregan", floor=1 }},
-	[1427] = {  -- Searing Gorge: Blackrock Mountain raids + dungeons
-		{ x=34.8, y=85.3, name="MoltenCore", floor=1 },
-		{ x=34.8, y=85.3, name="BlackwingLair", floor=1 },
-		{ x=34.8, y=85.3, name="BlackrockDepths", floor=1 },
-		{ x=34.8, y=85.3, name="BlackrockSpire", floor=7 },
+	[1427] = {
+		{ x=39.1, y=85.5, name="MoltenCore", floor=1 },
+		{ x=30.3, y=85.4, name="BlackwingLair", floor=1 },
+		{ x=34.8, y=79.8, name="BlackrockDepths", floor=1 },
+		{ x=34.7, y=85.5, name="BlackrockSpire", floor=7 },
 	},
 	[1428] = {  -- Burning Steppes: Blackrock Mountain raids + dungeons
 		{ x=29.8, y=38.5, name="MoltenCore", floor=1 },
@@ -421,38 +505,44 @@ ns.dungeonPortals = {
 		{ x=25.5, y=32.5, name="BlackrockDepths", floor=1 },
 		{ x=34, y=32.8, name="BlackrockSpire", floor=7 },
 	},
-	[1435] = {{ x=69.9, y=53.6, name="TheTempleofAtalhakkar", floor=1 }},
+	[1435] = {
+		{ x=70.7, y=59.3, name="TheTempleofAtalhakkar", floor=1 },
+	},
 	[1436] = {{ x=42.5, y=71.7, name="TheDeadmines", floor=1 }},
 	[1453] = {{ x=42.3, y=59.0, name="TheStockade", floor=1 }},
 	[1957] = {  -- Isle of Quel'Danas: Magisters' Terrace + Sunwell Plateau
 		{ x=61.2, y=30.9, name="MagistersTerrace", floor=1 },
 		{ x=44.3, y=45.6, name="SunwellPlateau", floor=1 },
 	},
-	[1434] = {{ x=52.2, y=17.4, name="ZulGurub", floor=1 }},		   -- Stranglethorn Vale
+	[1434] = {
+		{ x=53.6, y=17.8, name="ZulGurub", floor=1 },
+	},		   -- Stranglethorn Vale
 	[1445] = {{ x=52.6, y=76.8, name="OnyxiasLair", floor=1 }},		-- Dustwallow Marsh
-	[1430] = {{ x=46.9, y=74.4, name="Karazhan", floor=1 }},		   -- Deadwind Pass
+	[1430] = {
+		{ x=45.9, y=73.2, name="Karazhan", floor=1 },
+	},		   -- Deadwind Pass
 	[1942] = {{ x=35.8, y=37.1, name="ZulAman", floor=1 }},			-- Ghostlands
 
 	-- Kalimdor
-	[1413] = {  -- The Barrens: 3 dungeons
-		{ x=46.0, y=36.4, name="WailingCaverns", floor=1 },
-		{ x=42.9, y=90.2, name="RazorfenKraul", floor=1 },
-		{ x=49.0, y=93.9, name="RazorfenDowns", floor=1 },
+	[1413] = {
+		{ x=46.8, y=36.8, name="WailingCaverns", floor=1 },
+		{ x=41, y=89.7, name="RazorfenKraul", floor=1 },
+		{ x=49.3, y=89, name="RazorfenDowns", floor=1 },
 	},
 	[1440] = {{ x=14.5, y=14.2, name="BlackfathomDeeps", floor=1 }},
 	[1443] = {{ x=29.1, y=62.5, name="Maraudon", floor=1 }},
 	[1444] = {  -- Feralas: 3 entrances Dire Maul
 		{ x=59.1, y=41.7, name="Diremaul", floor=2 },
 	},
-	[1451] = {  -- Silithus: AQ20 + AQ40
-		{ x=37.2, y=93, name="RuinsofAhnQiraj", floor=1 },
-		{ x=29.4, y=92.7, name="AhnQiraj", floor=1 },
+	[1451] = {
+		{ x=37.2, y=93.7, name="RuinsofAhnQiraj", floor=1 },
+		{ x=29.9, y=92.1, name="AhnQiraj", floor=1 },
 	},
-	[1446] = {  -- Tanaris: Zul'Farrak + Caverns of Time
-		{ x=37.5, y=12.9, name="ZulFarrak", floor=1 },
-		{ x=65.4, y=49.3, name="CoTHillsbradFoothills", floor=1 },
-		{ x=66.2, y=49.3, name="CoTTheBlackMorass", floor=1 },
-		{ x=67, y=49.3, name="CoTMountHyjal", floor=1 },
+	[1446] = {
+		{ x=37.1, y=12.2, name="ZulFarrak", floor=1 },
+		{ x=66.2, y=48.7, name="CoTHillsbradFoothills", floor=1 },
+		{ x=67, y=48.7, name="CoTTheBlackMorass", floor=1 },
+		{ x=67.8, y=48.7, name="CoTMountHyjal", floor=1 },
 	},
 	[1454] = {{ x=52.6, y=49.0, name="Ragefire", floor=1 }},
 
@@ -1052,21 +1142,21 @@ ns.dungeonBosses = {
 			-- Wing positions from Blizzard's journal pins; Sapphiron and
 			-- Kel'Thuzad share one journal map while our art gives each
 			-- its own floor, so those two are centred approximations.
-			{ "Anub'Rekhan", 30.0, 40.9, 1, "Naxxramas", 1 },
+			{ "Anub'Rekhan", 30, 40.9, 1, "Naxxramas", 1 },
 			{ "Grand Widow Faerlina", 43.2, 31.4, 1, "Naxxramas", 2 },
 			{ "Maexxna", 67.2, 13.3, 1, "Naxxramas", 3 },
-			{ "Noth the Plaguebringer", 33.9, 49.1, 2, "Naxxramas", 4 },
-			{ "Heigan the Unclean", 48.7, 39.7, 2, "Naxxramas", 5 },
-			{ "Loatheb", 74.4, 24.7, 2, "Naxxramas", 6 },
-			{ "Instructor Razuvious", 41.8, 40.0, 3, "Naxxramas", 7 },
+			{ "Noth the Plaguebringer", 30, 40.7, 2, "Naxxramas", 4 },
+			{ "Heigan the Unclean", 43.1, 31.3, 2, "Naxxramas", 5 },
+			{ "Loatheb", 67.1, 13.2, 2, "Naxxramas", 6 },
+			{ "Instructor Razuvious", 41.8, 40, 3, "Naxxramas", 7 },
 			{ "Gothik the Harvester", 66.1, 51.9, 3, "Naxxramas", 8 },
 			{ "The Four Horsemen", 29.5, 66.8, 3, "Naxxramas", 9 },
-			{ "Patchwerk", 53.0, 36.3, 4, "Naxxramas", 10 },
-			{ "Grobbulus", 60.3, 46.2, 4, "Naxxramas", 11 },
-			{ "Gluth", 45.3, 38.1, 4, "Naxxramas", 12 },
-			{ "Thaddius", 26.0, 12.7, 4, "Naxxramas", 13 },
-			{ "Sapphiron", 52.0, 55.0, 5, "Naxxramas", 14 },
-			{ "Kel'Thuzad", 48.0, 40.0, 6, "Naxxramas", 15 },
+			{ "Patchwerk", 74.1, 24.6, 4, "Naxxramas", 10 },
+			{ "Grobbulus", 64.9, 47.5, 4, "Naxxramas", 11 },
+			{ "Gluth", 48.7, 39.5, 4, "Naxxramas", 12 },
+			{ "Thaddius", 33.9, 49.2, 4, "Naxxramas", 13 },
+			{ "Sapphiron", 52.1, 43.1, 5, "Naxxramas", 14 },
+			{ "Kel'Thuzad", 35.7, 19.5, 6, "Naxxramas", 15 },
 		},
 	},
 	[534] = {
