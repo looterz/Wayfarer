@@ -52,6 +52,10 @@ local GetLevelSuffix = function(minLevel, maxLevel)
 	return color.colorCode.." ("..maxLevel..")"..FONT_COLOR_CODE_CLOSE
 end
 
+-- The entrance pin tooltips colour their dungeon ranges the same way,
+-- so the map never shows the same range in two different colours.
+ns.GetLevelSuffix = GetLevelSuffix
+
 -- Green if it's ours, red if it isn't.
 local GetFactionDescription = function(zoneFaction)
 	if (not zoneFaction) then

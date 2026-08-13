@@ -63,7 +63,13 @@ local GridToFrame = function(x, y, width, height)
 	       (y / 100) * (GRID_H / CONTENT_H) * height
 end
 
+local FrameToGrid = function(px, py, width, height)
+	return (px / width) * (CONTENT_W / GRID_W) * 100,
+	       (py / height) * (CONTENT_H / GRID_H) * 100
+end
+
 ns.GridToFrame = GridToFrame
+ns.FrameToGrid = FrameToGrid
 
 local BOSS_PIN_SIZE = 16
 
@@ -102,9 +108,10 @@ local GetShownFrame = function(name)
 	end
 end
 
--- "BlackrockDepths" -> "Blackrock Depths"
+-- "BlackrockDepths" -> "Blackrock Depths", with the data table catching
+-- the names CamelCase splitting mangles ("The Temple of Atal'Hakkar").
 local Prettify = function(folder)
-	return (string_gsub(folder, "(%l)(%u)", "%1 %2"))
+	return ns.PrettyDungeonName(folder)
 end
 
 -- Dungeon lookup
@@ -435,6 +442,16 @@ local GetDerivedEntry = function(instanceMapID)
 	mergedBosses[instanceMapID] = entry
 
 	return entry
+end
+
+-- Developer mode edits the underlying tables; the merge cache above
+-- would otherwise keep serving the stale result.
+function InstanceMaps:InvalidateBossCache(instanceMapID)
+	if (instanceMapID) then
+		mergedBosses[instanceMapID] = nil
+	else
+		mergedBosses = {}
+	end
 end
 -- Coordinates are percentages of the 1024x768 map, the same space the
 -- client's own dungeon art uses, so they drop straight on with no fitting.

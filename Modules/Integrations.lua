@@ -556,7 +556,18 @@ function Integrations:GetEntrancePin(index)
 		pin:SetScript("OnEnter", function(pinSelf)
 			fill:SetColorTexture(unpack(Colors.highlight))
 			GameTooltip:SetOwner(pinSelf, "ANCHOR_RIGHT")
-			GameTooltip:AddLine(pinSelf.label or "")
+
+			-- The recommended level range rides along in the same
+			-- difficulty colours the zone names use, behind the same
+			-- zone levels toggle.
+			local title = pinSelf.label or ""
+			local levels = pinSelf.instanceMapID and ns.dungeonLevels
+				and ns.dungeonLevels[pinSelf.instanceMapID]
+			if (levels) and (Wayfarer.db.profile.zoneLevels.enable) and (ns.GetLevelSuffix) then
+				title = title..(ns.GetLevelSuffix(levels[1], levels[2]) or "")
+			end
+
+			GameTooltip:AddLine(title)
 			GameTooltip:AddLine(L["Click to open this dungeon's map"], .6, .6, .6)
 			GameTooltip:Show()
 		end)
@@ -641,7 +652,7 @@ function Integrations:ShowEntrancePins()
 		if (pin) then
 			pin.dungeon = portal.name
 			pin.instanceMapID = instanceIDByDungeon[portal.name]
-			pin.label = (string_gsub(portal.name, "(%l)(%u)", "%1 %2"))
+			pin.label = ns.PrettyDungeonName(portal.name)
 
 			-- The marker artwork is off by default: it reads as clutter on
 			-- hand-drawn zone art. The frame stays live either way, so the

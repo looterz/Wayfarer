@@ -20,7 +20,7 @@ if (not ns.isSupportedClient) then
 	ns.zoneDataTBC, ns.zoneRevealTBC, ns.tbcInstances = nil, nil, nil
 	ns.dungeonByMapID, ns.subzoneToFloor, ns.specialDungeons = nil, nil, nil
 	ns.defaultFloor, ns.dungeonFloors, ns.floorLabels, ns.floorNames = nil, nil, nil, nil
-	ns.questieAreaByInstance, ns.dungeonPortals = nil, nil
+	ns.questieAreaByInstance, ns.dungeonPortals, ns.dungeonLevels = nil, nil, nil
 	ns.npcPositions, ns.dungeonBosses, ns.dungeonStairs = nil, nil, nil
 	return
 end

@@ -2,7 +2,7 @@
 ## Title: Wayfarer
 ## Notes: An all in one map addon for Classic Era.|nCoordinates, zone levels, fog of war, screen-sized map and dungeon maps with boss locations.
 ## Author: looterz
-## Version: 1.0.1
+## Version: 1.0.2
 ## Category: Map
 ## X-Category: Map
 ## X-Curse-Project-ID: 1648926
@@ -38,3 +38,4 @@ Modules\ZoneLevels.lua
 Modules\MapReveal.lua
 Modules\InstanceMaps.lua
 Modules\Integrations.lua
+Modules\Developer.lua

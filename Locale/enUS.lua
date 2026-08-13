@@ -105,6 +105,7 @@ L["%s is not installed."] = true
 L["Classic Era reports no player position inside an instance, so a \"you are here\" marker is not possible here."] = true
 L["Showing the zone map. Pick the dungeon from the map dropdown to go back."] = true
 L["Report why the fog of war is or is not lifted."] = true
+L["Toggle developer mode: drag, add, rename and delete map pins."] = true
 L["Unexplored brightness"] = true
 L["How brightly the areas you have not explored are drawn. Anything below full makes them read as different from ground you have actually walked, which is the point of drawing them at all."] = true
 L["Always show explored areas"] = true

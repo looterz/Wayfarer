@@ -72,9 +72,18 @@ function MapSize:ApplyScale()
 	local targetHeight = (screenHeight - CHROME_MARGIN * 2) * (percent / 100)
 	local scale = targetHeight / naturalHeight
 
+	-- Developer mode parks the pin-editing sidebar on the map's right
+	-- edge. Reserve a lane for it and slide the map left, or the sidebar
+	-- hangs off the screen and its buttons cannot be reached.
+	local devPad = 0
+	local Developer = Wayfarer:GetModule("Developer", true)
+	if (Developer) and (Developer.IsOn) and (Developer:IsOn()) then
+		devPad = ns.DEV_SIDEBAR_SPAN or 0
+	end
+
 	-- Don't let a tall setting push the map off the sides.
 	if (screenWidth) and (screenWidth > 0) then
-		local maxScale = (screenWidth - CHROME_MARGIN * 2) / naturalWidth
+		local maxScale = (screenWidth - CHROME_MARGIN * 2) / (naturalWidth + devPad)
 		scale = math_min(scale, maxScale)
 	end
 
@@ -89,7 +98,7 @@ function MapSize:ApplyScale()
 
 	Canvas:SetScale(scale)
 	Canvas:ClearAllPoints()
-	Canvas:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	Canvas:SetPoint("CENTER", UIParent, "CENTER", -(devPad * scale) / 2, 0)
 
 	self.applying = nil
 

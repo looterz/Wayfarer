@@ -126,6 +126,14 @@ SlashCmdList["WAYFARER"] = function(input)
 		return
 	end
 
+	if (input == "dev") then
+		local Developer = Wayfarer:GetModule("Developer", true)
+		if (Developer) then
+			Developer:Toggle()
+		end
+		return
+	end
+
 	if (input == "frames") then
 		ns.FrameReport()
 		return
@@ -156,4 +164,5 @@ SlashCmdList["WAYFARER"] = function(input)
 	Wayfarer:Print("  /wayf tree        - "..L["List every named frame on the world map."])
 	Wayfarer:Print("  /wayf pick        - "..L["Force the instance picker open and describe it."])
 	Wayfarer:Print("  /wayf fog         - "..L["Report why the fog of war is or is not lifted."])
+	Wayfarer:Print("  /wayf dev         - "..L["Toggle developer mode: drag, add, rename and delete map pins."])
 end

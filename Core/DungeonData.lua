@@ -86,6 +86,85 @@ ns.dungeonByMapID = {
 	[585] = "MagistersTerrace",
 }
 
+-- Folder names double as display names by splitting CamelCase, which
+-- mangles the ones with lowercase words, apostrophes or acronyms.
+ns.dungeonDisplayNames = {
+	Ragefire = "Ragefire Chasm",
+	Diremaul = "Dire Maul",
+	TheTempleofAtalhakkar = "The Temple of Atal'Hakkar",
+	ZulFarrak = "Zul'Farrak",
+	ZulGurub = "Zul'Gurub",
+	ZulAman = "Zul'Aman",
+	AhnQiraj = "Ahn'Qiraj",
+	RuinsofAhnQiraj = "Ruins of Ahn'Qiraj",
+	OnyxiasLair = "Onyxia's Lair",
+	GruulsLair = "Gruul's Lair",
+	MagtheridonsLair = "Magtheridon's Lair",
+	CoilfangReservoir = "Serpentshrine Cavern",
+	CoTHillsbradFoothills = "Old Hillsbrad Foothills",
+	CoTTheBlackMorass = "The Black Morass",
+	CoTMountHyjal = "Hyjal Summit",
+	ManaTombs = "Mana-Tombs",
+	MagistersTerrace = "Magisters' Terrace",
+}
+
+ns.PrettyDungeonName = function(folder)
+	if (not folder) then
+		return ""
+	end
+	return ns.dungeonDisplayNames[folder] or (string.gsub(folder, "(%l)(%u)", "%1 %2"))
+end
+
+-- Recommended level ranges, shown on the entrance pin tooltips in the
+-- same difficulty colours the zone names use.
+ns.dungeonLevels = {
+	-- Vanilla dungeons
+	[389] = { 13, 18 },  -- Ragefire Chasm
+	[43]  = { 15, 25 },  -- Wailing Caverns
+	[36]  = { 18, 23 },  -- The Deadmines
+	[33]  = { 22, 30 },  -- Shadowfang Keep
+	[48]  = { 24, 32 },  -- Blackfathom Deeps
+	[34]  = { 24, 32 },  -- The Stockade
+	[90]  = { 29, 38 },  -- Gnomeregan
+	[47]  = { 30, 40 },  -- Razorfen Kraul
+	[189] = { 26, 45 },  -- Scarlet Monastery
+	[129] = { 40, 50 },  -- Razorfen Downs
+	[70]  = { 42, 52 },  -- Uldaman
+	[209] = { 44, 54 },  -- Zul'Farrak
+	[349] = { 46, 55 },  -- Maraudon
+	[109] = { 50, 60 },  -- The Temple of Atal'Hakkar
+	[230] = { 52, 60 },  -- Blackrock Depths
+	[229] = { 55, 60 },  -- Blackrock Spire
+	[429] = { 55, 60 },  -- Dire Maul
+	[329] = { 58, 60 },  -- Stratholme
+	[289] = { 58, 60 },  -- Scholomance
+	-- Vanilla raids
+	[409] = { 60, 60 }, [249] = { 60, 60 }, [469] = { 60, 60 },
+	[309] = { 60, 60 }, [509] = { 60, 60 }, [531] = { 60, 60 },
+	[533] = { 60, 60 },
+	-- TBC dungeons
+	[543] = { 60, 62 },  -- Hellfire Ramparts
+	[542] = { 61, 63 },  -- The Blood Furnace
+	[547] = { 62, 64 },  -- The Slave Pens
+	[546] = { 63, 65 },  -- The Underbog
+	[557] = { 64, 66 },  -- Mana-Tombs
+	[558] = { 65, 67 },  -- Auchenai Crypts
+	[560] = { 66, 68 },  -- Old Hillsbrad Foothills
+	[556] = { 67, 69 },  -- Sethekk Halls
+	[545] = { 68, 70 },  -- The Steamvault
+	[555] = { 69, 70 },  -- Shadow Labyrinth
+	[540] = { 69, 70 },  -- The Shattered Halls
+	[554] = { 69, 70 },  -- The Mechanar
+	[553] = { 70, 70 },  -- The Botanica
+	[552] = { 70, 70 },  -- The Arcatraz
+	[269] = { 70, 70 },  -- The Black Morass
+	[585] = { 70, 70 },  -- Magisters' Terrace
+	-- TBC raids
+	[532] = { 70, 70 }, [565] = { 70, 70 }, [544] = { 70, 70 },
+	[548] = { 70, 70 }, [550] = { 70, 70 }, [534] = { 70, 70 },
+	[564] = { 70, 70 }, [568] = { 70, 70 }, [580] = { 70, 70 },
+}
+
 -- The instances above that only exist on The Burning Crusade client.
 -- Core.lua strips them from the tables on Classic Era.
 ns.tbcInstances = {
@@ -245,7 +324,7 @@ ns.floorNames = {
 	["BlackfathomDeeps"] = { "Deeps", "Moonshrine Ruins", "Forgotten Pool" },
 	["Scholomance"]	  = { "Reliquary", "Chamber of Summoning", "Floor 3", "Headmaster's Study" },
 	["BlackrockDepths"]  = { "Detention Block", "Domicile" },
-	["BlackrockSpire"]   = { "Tazz'Alaor", "Rookery", "Hordemar City", "Floor 4", "Floor 5", "Chamber of Battle", "Hall of Blackhand" },
+	["BlackrockSpire"]   = { "Tazz'Alaor (Lower)", "The Rookery (Upper)", "Hordemar City (Lower)", "Halycon's Lair (Lower)", "Dragonspire Hall (Upper)", "Chamber of Battle (Lower)", "Hall of Blackhand (Upper)" },
 	-- TBC
 	["TheArcatraz"]	  = { "Stasis Block", "Restraining Grounds", "Top" },
 	-- Vanilla Raids
@@ -337,10 +416,10 @@ ns.dungeonPortals = {
 		{ x=34.8, y=85.3, name="BlackrockSpire", floor=7 },
 	},
 	[1428] = {  -- Burning Steppes: Blackrock Mountain raids + dungeons
-		{ x=29.4, y=38.3, name="MoltenCore", floor=1 },
-		{ x=29.4, y=38.3, name="BlackwingLair", floor=1 },
-		{ x=29.4, y=38.3, name="BlackrockDepths", floor=1 },
-		{ x=29.4, y=38.3, name="BlackrockSpire", floor=7 },
+		{ x=29.8, y=38.5, name="MoltenCore", floor=1 },
+		{ x=30, y=27.4, name="BlackwingLair", floor=1 },
+		{ x=25.5, y=32.5, name="BlackrockDepths", floor=1 },
+		{ x=34, y=32.8, name="BlackrockSpire", floor=7 },
 	},
 	[1435] = {{ x=69.9, y=53.6, name="TheTempleofAtalhakkar", floor=1 }},
 	[1436] = {{ x=42.5, y=71.7, name="TheDeadmines", floor=1 }},
@@ -363,19 +442,17 @@ ns.dungeonPortals = {
 	[1440] = {{ x=14.5, y=14.2, name="BlackfathomDeeps", floor=1 }},
 	[1443] = {{ x=29.1, y=62.5, name="Maraudon", floor=1 }},
 	[1444] = {  -- Feralas: 3 entrances Dire Maul
-		{ x=62.5, y=24.9, name="Diremaul", floor=1 },  -- North
-		{ x=60.3, y=30.2, name="Diremaul", floor=5 },  -- West (Warpwood)
-		{ x=64.8, y=30.2, name="Diremaul", floor=2 },  -- East (Capital Gardens)
+		{ x=59.1, y=41.7, name="Diremaul", floor=2 },
 	},
 	[1451] = {  -- Silithus: AQ20 + AQ40
-		{ x=36.4, y=93.6, name="RuinsofAhnQiraj", floor=1 },
-		{ x=29.1, y=92.4, name="AhnQiraj", floor=1 },
+		{ x=37.2, y=93, name="RuinsofAhnQiraj", floor=1 },
+		{ x=29.4, y=92.7, name="AhnQiraj", floor=1 },
 	},
 	[1446] = {  -- Tanaris: Zul'Farrak + Caverns of Time
-		{ x=38.7, y=20.0, name="ZulFarrak", floor=1 },
+		{ x=37.5, y=12.9, name="ZulFarrak", floor=1 },
 		{ x=65.4, y=49.3, name="CoTHillsbradFoothills", floor=1 },
 		{ x=66.2, y=49.3, name="CoTTheBlackMorass", floor=1 },
-		{ x=67.0, y=49.3, name="CoTMountHyjal", floor=1 },
+		{ x=67, y=49.3, name="CoTMountHyjal", floor=1 },
 	},
 	[1454] = {{ x=52.6, y=49.0, name="Ragefire", floor=1 }},
 
@@ -530,7 +607,7 @@ ns.dungeonBosses = {
 			-- nothing notable, so their pins carry no loot link. Positions
 			-- projected from spawn data; Targorr and Dextren average
 			-- several spawn cells.
-			{ "Targorr the Dread", 44.4, 36.2, 1 },
+			{ "Targorr the Dread", 49, 18.5, 1 },
 			{ "Kam Deepfury", 68.1, 25.5, 1, "TheStockade", 1 },
 			{ "Hamhock", 76.5, 39.7, 1 },
 			{ "Bazil Thredd", 83.9, 44.4, 1 },
@@ -585,7 +662,7 @@ ns.dungeonBosses = {
 			{ "Ghamoo-ra", 32.1, 52.6, 1, "BlackfathomDeeps", 1 },
 			{ "Lady Sarevess", 11.1, 34.4, 1, "BlackfathomDeeps", 2 },
 			{ "Gelihast", 53.2, 49.3, 1, "BlackfathomDeeps", 3 },
-			{ "Baron Aquanis", 39.8, 68, 2, "BlackfathomDeeps", 4 },
+			{ "Baron Aquanis", 39.9, 62.7, 2, "BlackfathomDeeps", 4 },
 			{ "Twilight Lord Kelris", 51.6, 71.1, 2, "BlackfathomDeeps", 5 },
 			{ "Old Serra'kis", 57.5, 26.3, 3, "BlackfathomDeeps", 6 },
 			{ "Aku'mai", 84, 75, 2, "BlackfathomDeeps", 7 },
@@ -618,7 +695,7 @@ ns.dungeonBosses = {
 			{ "Viscous Fallout", 74.1, 40.5, 2, "Gnomeregan", 3 },
 			{ "Electrocutioner 6000", 23.7, 59, 2, "Gnomeregan", 4 },
 			{ "Crowd Pummeler 9-60", 42.1, 76.4, 3, "Gnomeregan", 5 },
-			{ "Dark Iron Ambassador", 28.9, 47, 4, "Gnomeregan", 6 },
+			{ "Dark Iron Ambassador", 30.5, 25.7, 4, "Gnomeregan", 6 },
 			{ "Mekgineer Thermaplugg", 2.8, 56, 2, "Gnomeregan", 7 },
 		},
 	},
@@ -656,18 +733,18 @@ ns.dungeonBosses = {
 		bosses = {
 			{ "Azshir the Sleepless", 34, 44.7, 1, "ScarletMonasteryGraveyard", 2 },
 			{ "Fallen Champion", 35.1, 57.7, 1, "ScarletMonasteryGraveyard", 3 },
-			{ "Ironspine", 50.6, 59, 1, "ScarletMonasteryGraveyard", 4 },
+			{ "Ironspine", 50.1, 57.7, 1, "ScarletMonasteryGraveyard", 4 },
 			{ "Bloodmage Thalnos", 23.5, 48.8, 1, "ScarletMonasteryGraveyard", 5 },
-			{ "Scorn", 73.6, 50.2, 1, "ScarletMonasteryGraveyard", 7 },
-			{ "Headless Horseman", 68.4, 45.9, 1, "ScarletMonasteryGraveyard", 8 },
+			{ "Scorn", 70.7, 54.6, 1, "ScarletMonasteryGraveyard", 7 },
+			{ "Headless Horseman", 68.6, 51.9, 1, "ScarletMonasteryGraveyard", 8 },
 			{ "Arcanist Doan", 81.6, 64.6, 2, "ScarletMonasteryLibrary", 2 },
 			{ "Doan's Strongbox", 28.8, 73.5, 2, "ScarletMonasteryLibrary", 4 },
 			{ "Scarlet Commander Mograine", 48.1, 14.4, 4, "ScarletMonasteryCathedral", 2 },
 			{ "High Inquisitor Whitemane", 48, 24, 4, "ScarletMonasteryCathedral", 3 },
-			{ "Interrogator Vishas", 70, 51.3, 1, "ScarletMonasteryGraveyard", 1 },
+			{ "Interrogator Vishas", 70.5, 51.8, 1, "ScarletMonasteryGraveyard", 1 },
 			{ "Houndmaster Loksey", 30.1, 76.4, 2, "ScarletMonasteryLibrary", 1 },
 			{ "Herod", 77, 9.4, 3, "ScarletMonasteryArmory", 1 },
-			{ "High Inquisitor Fairbanks", 54.2, 22.7, 4, "ScarletMonasteryCathedral", 1 },
+			{ "High Inquisitor Fairbanks", 54.2, 21.6, 4, "ScarletMonasteryCathedral", 1 },
 		},
 	},
 	[209] = {
@@ -675,16 +752,16 @@ ns.dungeonBosses = {
 		bosses = {
 			{ "Antu'sul", 62.9, 23.9, 1, "Zul'Farrak", 1 },
 			{ "Theka the Martyr", 51.6, 22.8, 1, "Zul'Farrak", 2 },
-			{ "Sandarr Dunereaver", 45.3, 50.3, 1, "Zul'Farrak", 3 },
-			{ "Witch Doctor Zum'rah", 43.1, 13.2, 1, "Zul'Farrak", 4 },
+			{ "Sandarr Dunereaver", 43.6, 45.7, 1, "Zul'Farrak", 3 },
+			{ "Witch Doctor Zum'rah", 43.3, 15.1, 1, "Zul'Farrak", 4 },
 			{ "Nekrum Gutchewer", 29.8, 18.3, 1, "Zul'Farrak", 5 },
 			{ "Shadowpriest Sezz'ziz", 24, 15.2, 1, "Zul'Farrak", 6 },
 			{ "Dustwraith", 31.7, 13.1, 1, "Zul'Farrak", 7 },
 			{ "Sandfury Executioner", 23.7, 15.6, 1, "Zul'Farrak", 8 },
 			{ "Sergeant Bly", 23, 15.9, 1, "Zul'Farrak", 9 },
-			{ "Hydromancer Velratha", 28.8, 34.2, 1, "Zul'Farrak", 10 },
-			{ "Gahz'rilla", 62.7, 63.3, 1, "Zul'Farrak", 11 },
-			{ "Chief Ukorz Sandscalp", 42.9, 30.7, 1, "Zul'Farrak", 12 },
+			{ "Hydromancer Velratha", 30.6, 35.8, 1, "Zul'Farrak", 10 },
+			{ "Gahz'rilla", 57.6, 58.5, 1, "Zul'Farrak", 11 },
+			{ "Chief Ukorz Sandscalp", 41.3, 29, 1, "Zul'Farrak", 12 },
 			{ "Zerillis", 52.6, 32.4, 1, "Zul'Farrak", 13 },
 		},
 	},
@@ -758,7 +835,7 @@ ns.dungeonBosses = {
 	[249] = {
 		atlasModule = "AtlasLootClassic_DungeonsAndRaids",
 		bosses = {
-			{ "Onyxia", 66.5, 27.8, 1, "Onyxia", 1 },
+			{ "Onyxia", 65.8, 26.7, 1, "Onyxia", 1 },
 		},
 	},
 	[269] = {
@@ -815,10 +892,10 @@ ns.dungeonBosses = {
 		atlasModule = "AtlasLootClassic_DungeonsAndRaids",
 		bosses = {
 			{ "Skul", 81.9, 34.7, 1, "Stratholme", 1 },
-			{ "Stratholme Courier", 52.9, 61.7, 1, "Stratholme", 2 },
-			{ "Hearthsinger Forresten", 59.2, 27.3, 1, "Stratholme", 3 },
+			{ "Stratholme Courier", 55.4, 59.6, 1, "Stratholme", 2 },
+			{ "Hearthsinger Forresten", 59, 28.2, 1, "Stratholme", 3 },
 			{ "The Unforgiven", 72, 17.4, 1, "Stratholme", 4 },
-			{ "Timmy the Cruel", 48.9, 15.5, 1, "Stratholme", 6 },
+			{ "Timmy the Cruel", 48.3, 15.6, 1, "Stratholme", 6 },
 			{ "Malor the Zealous", 29, 35.3, 1, "Stratholme", 7 },
 			{ "Crimson Hammersmith", 11.4, 41.6, 1, "Stratholme", 8 },
 			{ "Cannon Master Willey", 4, 44, 1, "Stratholme", 9 },
@@ -826,21 +903,21 @@ ns.dungeonBosses = {
 			{ "Balnazzar", 19.8, 71, 1, "Stratholme", 11 },
 			{ "Magistrate Barthilas", 55.5, 14.1, 2, "Stratholme", 12 },
 			{ "Stonespine", 63.5, 42.5, 2, "Stratholme", 13 },
-			{ "Baroness Anastari", 73.0, 40.8, 2, "Stratholme", 14 },
+			{ "Baroness Anastari", 73, 40.8, 2, "Stratholme", 14 },
 			{ "Black Guard Swordsmith", 72.5, 40.1, 2, "Stratholme", 15 },
 			{ "Nerub'enkan", 55.8, 40.4, 2, "Stratholme", 16 },
 			{ "Maleki the Pallid", 66.1, 18.9, 2, "Stratholme", 17 },
 			{ "Ramstein the Gorger", 44.3, 17.1, 2, "Stratholme", 18 },
 			{ "Baron Rivendare", 38.2, 17.7, 2, "Stratholme", 19 },
 			{ "Atiesh", 12, 90, 1, "Stratholme", 22 },
-			{ "Balzaphon", 78.8, 14.1, 1, "Stratholme", 23 },
+			{ "Balzaphon", 78, 16.5, 1, "Stratholme", 23 },
 			{ "Sothos and Jarien's Heirlooms", 50, 90, 1, "Stratholme", 24 },
 		},
 	},
 	[349] = {
 		atlasModule = "AtlasLootClassic_DungeonsAndRaids",
 		bosses = {
-			{ "Veng", 44.5, 16.2, 1, "Maraudon", 1 },
+			{ "Veng", 40.4, 16.9, 1, "Maraudon", 1 },
 			{ "Noxxion", 35, 8.6, 1, "Maraudon", 2 },
 			{ "Razorlash", 16, 29.6, 1, "Maraudon", 3 },
 			{ "Maraudos", 49.4, 45.4, 1, "Maraudon", 4 },
@@ -848,8 +925,8 @@ ns.dungeonBosses = {
 			{ "Meshlok the Harvester", 22.6, 60.6, 1, "Maraudon", 6 },
 			{ "Celebras the Cursed", 23.9, 12.1, 2, "Maraudon", 7 },
 			{ "Landslide", 40.3, 42.6, 2, "Maraudon", 8 },
-			{ "Tinkerer Gizlock", 49.6, 56.6, 2, "Maraudon", 9 },
-			{ "Rotgrip", 32.5, 67, 2, "Maraudon", 10 },
+			{ "Tinkerer Gizlock", 49.2, 55.1, 2, "Maraudon", 9 },
+			{ "Rotgrip", 40.4, 71, 2, "Maraudon", 10 },
 			{ "Princess Theradras", 25.4, 68.6, 2, "Maraudon", 11 },
 		},
 	},
@@ -858,9 +935,9 @@ ns.dungeonBosses = {
 		bosses = {
 			-- Oggleflint and Bazzalan drop nothing notable, so they have no
 			-- AtlasLoot page; their pins carry no loot link.
-			{ "Oggleflint", 54.8, 33.1, 1 },
+			{ "Oggleflint", 52.9, 25.9, 1 },
 			{ "Taragaman the Hungerer", 40.1, 50.2, 1, "Ragefire", 1 },
-			{ "Jergosh the Invoker", 32.3, 73.5, 1, "Ragefire", 2 },
+			{ "Jergosh the Invoker", 33.5, 71, 1, "Ragefire", 2 },
 			{ "Bazzalan", 40.6, 75, 1 },
 		},
 	},
@@ -872,7 +949,7 @@ ns.dungeonBosses = {
 			{ "Gehennas", 32.5, 42.4, 1, "MoltenCore", 3 },
 			{ "Garr", 30.3, 60.6, 1, "MoltenCore", 4 },
 			{ "Shazzrah", 51.3, 67.5, 1, "MoltenCore", 5 },
-			{ "Baron Geddon", 65.8, 57.3, 1, "MoltenCore", 6 },
+			{ "Baron Geddon", 53.9, 73.7, 1, "MoltenCore", 6 },
 			{ "Golemagg the Incinerator", 67.1, 50.9, 1, "MoltenCore", 7 },
 			{ "Sulfuron Harbinger", 80.9, 72.2, 1, "MoltenCore", 8 },
 			{ "Majordomo Executus", 82.1, 57.3, 1, "MoltenCore", 9 },
@@ -967,6 +1044,29 @@ ns.dungeonBosses = {
 			{ "Chess Event", 35.2, 54, 14, "Karazhan", 14 },
 			{ "Prince Malchezaar", 50.4, 27.1, 17, "Karazhan", 15 },
 			{ "Nightbane", 46.1, 79.6, 6, "Karazhan", 16 },
+		},
+	},
+	[533] = {
+		atlasModule = "AtlasLootClassic_DungeonsAndRaids",
+		bosses = {
+			-- Wing positions from Blizzard's journal pins; Sapphiron and
+			-- Kel'Thuzad share one journal map while our art gives each
+			-- its own floor, so those two are centred approximations.
+			{ "Anub'Rekhan", 30.0, 40.9, 1, "Naxxramas", 1 },
+			{ "Grand Widow Faerlina", 43.2, 31.4, 1, "Naxxramas", 2 },
+			{ "Maexxna", 67.2, 13.3, 1, "Naxxramas", 3 },
+			{ "Noth the Plaguebringer", 33.9, 49.1, 2, "Naxxramas", 4 },
+			{ "Heigan the Unclean", 48.7, 39.7, 2, "Naxxramas", 5 },
+			{ "Loatheb", 74.4, 24.7, 2, "Naxxramas", 6 },
+			{ "Instructor Razuvious", 41.8, 40.0, 3, "Naxxramas", 7 },
+			{ "Gothik the Harvester", 66.1, 51.9, 3, "Naxxramas", 8 },
+			{ "The Four Horsemen", 29.5, 66.8, 3, "Naxxramas", 9 },
+			{ "Patchwerk", 53.0, 36.3, 4, "Naxxramas", 10 },
+			{ "Grobbulus", 60.3, 46.2, 4, "Naxxramas", 11 },
+			{ "Gluth", 45.3, 38.1, 4, "Naxxramas", 12 },
+			{ "Thaddius", 26.0, 12.7, 4, "Naxxramas", 13 },
+			{ "Sapphiron", 52.0, 55.0, 5, "Naxxramas", 14 },
+			{ "Kel'Thuzad", 48.0, 40.0, 6, "Naxxramas", 15 },
 		},
 	},
 	[534] = {
